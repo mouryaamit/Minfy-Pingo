@@ -30,6 +30,7 @@
     socket.on('Reconnect', function () {
         console.log('user reconnected');
         socket.emit('addMeCustomer', {user: cid});
+        document.getElementById('error').innerHTML = '';
         socket.emit('checkOnlineDetails', {user: cid});
     });
     socket.on('PickupLatLongDetails', function (data) {

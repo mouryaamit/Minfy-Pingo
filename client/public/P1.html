@@ -19,6 +19,10 @@
         console.log('user connected');
         socket.emit('addMePingo', {user: pid});
     });
+    socket.on('Reconnect', function () {
+        console.log('user reconnected');
+        socket.emit('addMePingo', {user: pid});
+    });
     function pushlatlong() {
         var lat = document.getElementById('lat').value
         var long = document.getElementById('long').value
@@ -27,9 +31,8 @@
         i++;
     }
     setInterval(function(){
-        var cid = parseInt(Math.random()*10)
-        console.log(cid)
-        socket.emit('pushLatLong', {lat: parseInt(Math.random()*100), long: parseInt(Math.random()*100), cid: cid, pid: pid})
+        var cid = parseInt(Math.random()*25)
+        socket.emit('pushLatLong', {lat: parseInt(Math.random()*180), long: parseInt(Math.random()*180), cid: cid, pid: pid})
     },1000);
 </script>
 </body>
