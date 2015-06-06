@@ -2,33 +2,48 @@
 <head>
     <title></title>
     <script type="text/javascript" src="js/socket.io.js"></script>
-    <script type="text/javascript">
-        var socket = io('http://localhost:3003');
-        var cid = 1;
-        socket.on('connect_error', function (err) {
-//        alert(err)
-        });
-        socket.on('connect', function () {
-            console.log('user connected');
-            socket.emit('addMeCustomer', {user: cid});
-        });
-        socket.on('PickupLatLongDetails', function (data) {
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode("For Me ( From P" + data.pid + " : Lat = " + data.lat + ", Long = " + data.long + ")");
-            node.appendChild(textnode);
-            document.getElementById("myList").appendChild(node);
-        })
-        socket.on('PickupLatLongDetailsBroadcast', function (data) {
-            var node = document.createElement("LI");
-            var textnode = document.createTextNode("For All ( From P" + data.pid + " : Lat = " + data.lat + ", Long = " + data.long + ")")
-            node.appendChild(textnode);
-            document.getElementById("myList").appendChild(node);
-        })
-    </script>
+
 </head>
 <body>
+<div style="background-color: red" id="error"></div>
+<div>Total Pingo Online : <label id="pingoTotal"></label></div>
 <ul id="myList">
 </ul>
+<script>
+    var socket = io('http://localhost:3003');
+    var cid = 1;
 
+    socket.on('totalPingoOnline', function (pingoTotal) {
+        document.getElementById('pingoTotal').innerHTML = pingoTotal;
+    });
+
+    socket.on('connect_error', function (err) {
+        document.getElementById('error').innerHTML = err;
+    });
+
+    socket.on('connect', function () {
+        console.log('user connected');
+        socket.emit('addMeCustomer', {user: cid});
+        document.getElementById('error').innerHTML = '';
+        socket.emit('checkOnlineDetails', {user: cid});
+    });
+    socket.on('Reconnect', function () {
+        console.log('user reconnected');
+        socket.emit('addMeCustomer', {user: cid});
+        socket.emit('checkOnlineDetails', {user: cid});
+    });
+    socket.on('PickupLatLongDetails', function (data) {
+        var node = document.createElement("LI");
+        var textnode = document.createTextNode("For Me ( From P" + data.pid + " : Lat = " + data.lat + ", Long = " + data.long + ")");
+        node.appendChild(textnode);
+        document.getElementById("myList").appendChild(node);
+    })
+    socket.on('PickupLatLongDetailsBroadcast', function (data) {
+        var node = document.createElement("LI");
+        var textnode = document.createTextNode("For All ( From P" + data.pid + " : Lat = " + data.lat + ", Long = " + data.long + ")")
+        node.appendChild(textnode);
+        document.getElementById("myList").appendChild(node);
+    })
+</script>
 </body>
 </html>

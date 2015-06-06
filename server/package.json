@@ -3,7 +3,7 @@
     "description": "",
     "author": "Amit Mourya <amitmourya@gmail.com>",
     "scripts": {
-        "start": "nodemon app.js"
+        "start": "nodemon index.js"
     }, "dependencies": {
     "express": "^4.12.4",
     "http": "0.0.0",

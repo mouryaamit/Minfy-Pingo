@@ -2,20 +2,7 @@
 <head>
     <title></title>
     <script type="text/javascript" src="js/socket.io.js"></script>
-    <script type="text/javascript">
-        var socket = io('http://localhost:3003');
-        var pid = 2;
-        socket.on('connect', function () {
-            console.log('user connected');
-            socket.emit('addMePingo', {user: pid});
-        });
-        function pushlatlong() {
-            var lat = document.getElementById('lat').value
-            var long = document.getElementById('long').value
-            var cid = document.getElementById('cid').value
-            socket.emit('pushLatLong', {lat: lat, long: long, cid: cid, pid: pid})
-        }
-    </script>
+
 </head>
 <body>
 <div><label>Lat</label><input id="lat"></div>
@@ -25,6 +12,25 @@
     <button onclick="pushlatlong()">Push</button>
 </div>
 </ul>
-
+<script type="text/javascript">
+    var socket = io('http://localhost:3003');
+    var pid = 2;
+    socket.on('connect', function () {
+        console.log('user connected');
+        socket.emit('addMePingo', {user: pid});
+    });
+    function pushlatlong() {
+        var lat = document.getElementById('lat').value
+        var long = document.getElementById('long').value
+        var cid = document.getElementById('cid').value
+        socket.emit('pushLatLong', {lat: lat, long: long, cid: cid, pid: pid})
+        i++;
+    }
+    setInterval(function(){
+        var cid = parseInt(Math.random()*10)
+        console.log(cid)
+        socket.emit('pushLatLong', {lat: parseInt(Math.random()*100), long: parseInt(Math.random()*100), cid: cid, pid: pid})
+    },1000);
+</script>
 </body>
 </html>
