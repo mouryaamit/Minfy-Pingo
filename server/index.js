@@ -49,6 +49,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('disconnect', function (data) {
+        console.log('user ' + socket.room + ' disconnected')
         if (socket.room.split('', 1)[0] == 'C') {
             customer.pop(socket.room)
             socket.broadcast.emit('totalCustomerOnline', customer.length);
@@ -70,6 +71,7 @@ io.on('connection', function (socket) {
         } else {
             io.in('C' + data.cid).emit('PickupLatLongDetails', data);
         }
+/*
         connectionPool.getConnection(function (err, connection) {
             if (err) {
                 console.error('CONNECTION error in pushlatlong : ' + err);
@@ -82,6 +84,7 @@ io.on('connection', function (socket) {
                 });
             }
         });
+*/
     });
 
     socket.on('bookNow', function (data) {

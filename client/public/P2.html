@@ -2,6 +2,7 @@
 <head>
     <title></title>
     <script type="text/javascript" src="js/socket.io.js"></script>
+    <script type="text/javascript" src="js/random.js"></script>
 
 </head>
 <body>
@@ -32,7 +33,7 @@
     }
     setInterval(function(){
         var cid = parseInt(Math.random()*25)
-        socket.emit('pushLatLong', {lat: parseInt(Math.random()*180), long: parseInt(Math.random()*180), cid: cid, pid: pid})
+        socket.emit('pushLatLong', {lat: getRandomLat(), long: getRandomLong(), cid: cid, pid: pid})
     },1000);
 </script>
 </body>
