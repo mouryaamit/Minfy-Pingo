@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="js/socket.io.js"></script>
+    <script type="text/javascript">
+        var socket = io('http://localhost:3003');
+        var pid = 1;
+        socket.on('connect', function () {
+            console.log('user connected');
+            socket.emit('addMePingo', {user: pid});
+        });
+        function pushlatlong() {
+            var lat = document.getElementById('lat').value
+            var long = document.getElementById('long').value
+            var cid = document.getElementById('cid').value
+            socket.emit('pushLatLong', {lat: lat, long: long, cid: cid, pid: pid})
+        }
+    </script>
+</head>
+<body>
+<div><label>Lat</label><input id="lat"></div>
+<div><label>Long</label><input id="long"></div>
+<div><label>Customer</label><input id="cid"></div>
+<div>
+    <button onclick="pushlatlong()">Push</button>
+</div>
+</ul>
+
+</body>
+</html>

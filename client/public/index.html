@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="js/socket.io.js"></script>
+    <script type="text/javascript" src="js/random.js"></script>
+    <script type="text/javascript">
+        var socket = io('http://localhost:3001');
+        function Send1() {
+            socket.emit('sendCommand', {From: 'admin', To: 'User1', data: {lat: random(), lon: random()}})
+        }
+        function Send2() {
+            socket.emit('sendCommand', {From: 'admin', To: 'User2', data: {lat: random(), lon: random()}})
+        }
+        //	socket.on('Refreshed',function(){
+        //		alert('Refreshed')
+        //        socket.emit('addMe',{user:'admin'})
+        //	});
+        socket.on('connect', function () {
+            console.log('user connected');
+            socket.emit('addMe', {user: 'admin'})
+        });
+        socket.on('disconnect', function () {
+            console.log('disconnected');
+        });
+        socket.on('NewLatLon', function (data) {
+            var node = document.createElement("LI");
+            var textnode = document.createTextNode(data.From + " : Lat = " + data.data.lat + ", Long = " + data.data.lon)
+            node.appendChild(textnode);
+            document.getElementById("myList").appendChild(node);
+        })
+    </script>
+</head>
+<body>
+<button onclick="Send1()">Send 1</button>
+<button onclick="Send2()">Send 2</button>
+<ul id="myList">
+
+</ul>
+
+</body>
+</html>

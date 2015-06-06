@@ -1,0 +1,254 @@
+<script type="text/javascript" src="js/socket.io.js"></script>
+
+<script type="text/javascript"> /*Customer*/
+var socket = io('http://localhost:3001');
+socket.on('connect', function () {
+    socket.emit('addMe', {user: 'MobileNo'})
+    /*MobileNo*/
+});
+socket.on('deliveryLatLong', function (data) {
+});
+socket.on('pickupConfirm', function (data) {
+});
+</script>
+
+<script type="text/javascript"> /*Delivery*/
+var socket = io('http://localhost:3001');
+socket.on('connect', function () {
+    socket.emit('addMe', {user: 'MobileNo'})
+    /*MobileNo*/
+});
+socket.on('newBooking', function (data) {
+});
+socket.on('cancelBooking', function (data) {
+});
+</script>
+
+
+<!-- JAVA CODE : CUSTOMER
+
+private Socket mSocket;
+{
+    try {
+        mSocket = IO.socket("http://chat.socket.io");
+    } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+    }
+}
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+    mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+    mSocket.on(Socket.EVENT_CONNECT, onConnect);
+
+    mSocket.on("updateLatLong", onUpdateLatLong);
+    mSocket.on("pickupConfirm", onPickupConfirm);
+    mSocket.connect();
+}
+
+@Override
+public void onDestroy() {
+    super.onDestroy();
+
+    mSocket.disconnect();
+    mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+    mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+    mSocket.off(Socket.EVENT_CONNECT, onConnect);
+
+    mSocket.off("updateLatLong", onUpdateLatLong);
+    mSocket.off("pickupConfirm", onPickupConfirm);
+}
+
+private Emitter.Listener onConnectError = new Emitter.Listener() {
+    @Override
+    public void call(Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity().getApplicationContext(),
+                R.string.error_connect, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+};
+
+private Emitter.Listener onConnect = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject data = (JSONObject) args[0];
+                String customerId;
+                try {
+                    customerId = ''; // take customer id
+                } catch (JSONException e) {
+                    return;
+                }
+
+                mSocket.emit("addMe", {user:customerId});
+            }
+        });
+    }
+};
+private Emitter.Listener onUpdateLatLong = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject data = (JSONObject) args[0];
+                String Lat;
+                String Long;
+                try {
+                    Lat = data.getString("Lat");
+                    Long = data.getString("Long");
+                } catch (JSONException e) {
+                    return;
+                }
+
+                updateLatLong(Lat,Long) // Define Method for updating Lat & Long
+            }
+        });
+    }
+};
+private Emitter.Listener onPickupConfirm = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject data = (JSONObject) args[0];
+                String BookingId;
+                try {
+                     BookingId = data.getString("BookingId");
+                } catch (JSONException e) {
+                    return;
+                }
+
+                pickupConfirm(BookingId) // Define method for confirm order : Push Notification
+            }
+        });
+    }
+};
+-->
+
+<!-- JAVA CODE : DELIVERY
+
+private Socket mSocket;
+{
+    try {
+        mSocket = IO.socket("http://chat.socket.io");
+    } catch (URISyntaxException e) {
+        throw new RuntimeException(e);
+    }
+}
+
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+    mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+    mSocket.on(Socket.EVENT_CONNECT, onConnect);
+
+    mSocket.on("newBooking", newBooking);
+    mSocket.on("cancelBooking", oncancelBooking);
+    mSocket.connect();
+}
+
+@Override
+public void onDestroy() {
+    super.onDestroy();
+
+    mSocket.disconnect();
+    mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+    mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+    mSocket.on(Socket.EVENT_CONNECT, onConnect);
+
+    mSocket.off("newBooking", onNewBooking);
+    mSocket.off("cancelBooking", onCancelBooking);
+}
+
+private Emitter.Listener onConnectError = new Emitter.Listener() {
+    @Override
+    public void call(Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity().getApplicationContext(),
+                R.string.error_connect, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+};
+
+private Emitter.Listener onConnect = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject data = (JSONObject) args[0];
+                String deliveryId;
+                try {
+                    deliveryId = ''; // take delivery id
+                } catch (JSONException e) {
+                    return;
+                }
+
+                mSocket.emit("addMe", {user:deliveryId});
+            }
+        });
+    }
+};
+private Emitter.Listener onNewBooking = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject data = (JSONObject) args[0];
+                String Lat;
+                String Long;
+                String Address;
+                String CustomerId;
+                try {
+                    Lat = data.getString("Lat");
+                    Long = data.getString("Long");
+                    Address = data.getString("Address");
+                    CustomerId = data.getString("CustomerId");
+                } catch (JSONException e) {
+                    return;
+                }
+
+                newBooking(Lat,Long,Address,CustomerId) // Define Method for adding New Booking : Push Notification
+            }
+        });
+    }
+};
+private Emitter.Listener onCancelBooking = new Emitter.Listener() {
+    @Override
+    public void call(final Object... args) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject data = (JSONObject) args[0];
+                String BookingId;
+                String CustomerId;
+                try {
+                     BookingId = data.getString("BookingId");
+                     CustomerId = data.getString("CustomerId");
+                } catch (JSONException e) {
+                    return;
+                }
+
+                cancelBooking(BookingId,CustomerId) // Define method for Cancel Booking : Push Notification
+            }
+        });
+    }
+};
+-->
