@@ -25,6 +25,9 @@ io.on('connection', function (socket) {
     console.log('user connected');
 
     socket.on('addMeCustomer', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
         var user = 'C' + data.user;
         socket.username = user;
         socket.room = user;
@@ -37,6 +40,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('addMePingo', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
         var user = 'P' + data.user;
         socket.username = user;
         socket.room = user;
@@ -50,6 +56,7 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', function (data) {
         console.log('user ' + socket.room + ' disconnected')
+        if(socket.room != undefined){
         if (socket.room.split('', 1)[0] == 'C') {
             customer.pop(socket.room)
             socket.broadcast.emit('totalCustomerOnline', customer.length);
@@ -58,6 +65,7 @@ io.on('connection', function (socket) {
             socket.broadcast.emit('totalPingoOnline', pingo.length);
         }
         io.in(socket.room).emit('Reconnect'); // Reconnect if other place login
+        }
     });
 
     socket.on('checkOnlineDetails', function (data) {
@@ -66,6 +74,9 @@ io.on('connection', function (socket) {
     })
 
     socket.on('pushLatLong', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
         if (data.cid == 0) {
             socket.broadcast.emit('PickupLatLongDetailsBroadcast', data);
         } else {
@@ -88,6 +99,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('bookNow', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
         //        if(){ //booked
         io.in('C' + data.cid).emit('bookingSuccess', data);
         io.in('P' + data.cid).emit('bookingSuccess', data);
@@ -97,6 +111,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('cancelBooking', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
 //        if(){ //cancelled
         io.in('C' + data.cid).emit('cancelSuccess', data);
         io.in('P' + data.cid).emit('cancelSuccess', data);
@@ -106,6 +123,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('pickupConfirm', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
         io.in(CustomerId).emit('pickupConfirm', {DeliveryId: DeliveryId, BookingId: BookingId});
     });
 
@@ -117,6 +137,9 @@ io.on('connection', function (socket) {
     }
 
     socket.on('onLogin', function(data){
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
 //        if(){
         socket.emit('loginSuccess', data);
 //        } else {
@@ -125,6 +148,9 @@ io.on('connection', function (socket) {
     });
 
     socket.on('onLogout', function(data){
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
 //        if(){
         socket.emit('logoutSuccess', data);
 //        } else {
