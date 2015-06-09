@@ -1,6 +1,6 @@
 {
     "name": "ping-server",
-    "description": "",
+    "description": "ping-server",
     "author": "Amit Mourya <amitmourya@gmail.com>",
     "scripts": {
         "start": "nodemon index.js"
