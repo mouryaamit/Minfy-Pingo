@@ -82,60 +82,119 @@ io.on('connection', function (socket) {
         } else {
             io.in('C' + data.cid).emit('PickupLatLongDetails', data);
         }
-/*
         connectionPool.getConnection(function (err, connection) {
             if (err) {
                 console.error('CONNECTION error in pushlatlong : ' + err);
             } else {
-                connection.query('CALL  InsertUpdate_PiingoLatLonUsingNodeJS("' + data.pid + '",0,"' + data.lat + '","' + data.long + '","' + data.cid + '")', function (err, rows, fields) {
+                connection.query('CALL  InsertUpdate_PiingoLatLonUsingNodeJS_customerid("' + data.pid + '",0,"' + data.lat + '","' + data.long + '","' + data.cid + '")', function (err, rows, fields) {
                     if (err) {
                         console.error('DB error in pushlatlong : ' + err.code);
+                    } else {
+                        console.log('pushlatlong completed')
                     }
                     connection.release();
                 });
             }
         });
-*/
     });
 
     socket.on('bookNow', function (data) {
         if(typeof(data) != "object"){
             data = JSON.parse(data);
         }
-        //        if(){ //booked
-        io.in('C' + data.cid).emit('bookingSuccess', data);
-        io.in('P' + data.cid).emit('bookingSuccess', data);
-//        } else { not booked
-        io.in('C' + data.cid).emit('bookingFail', data);
-//    }
+        connectionPool.getConnection(function (err, connection) {
+            if (err) {
+                io.in('C' + data.cid).emit('bookingFail', data);
+                console.error('CONNECTION error in bookNow : ' + err);
+            } else {
+                connection.query('CALL  InsertUpdate_NodeJSBookNowDetails("' + data.pid + '","' + data.cid + '","'+data.cobId+'")', function (err, rows, fields) {
+                    if (err) {
+                        io.in('C' + data.cid).emit('bookingFail', data);
+                        console.error('DB error in bookNow : ' + err.code);
+                    } else {
+                        io.in('C' + data.cid).emit('bookingSuccess', data);
+                        io.in('P' + data.pid).emit('bookingSuccess', data);
+                        console.log('bookNow completed')
+                    }
+                    connection.release();
+                });
+            }
+        });
     });
 
     socket.on('cancelBooking', function (data) {
         if(typeof(data) != "object"){
             data = JSON.parse(data);
         }
-//        if(){ //cancelled
-        io.in('C' + data.cid).emit('cancelSuccess', data);
-        io.in('P' + data.cid).emit('cancelSuccess', data);
-//        } else { not cancelled
-        io.in('C' + data.cid).emit('cancelFail', data);
-//    }
+        connectionPool.getConnection(function (err, connection) {
+            if (err) {
+                io.in('C' + data.cid).emit('cancelFail');
+                console.error('CONNECTION error in cancelBooking : ' + err);
+            } else {
+                connection.query('CALL  InsertUpdate_NodeJSCancelBookingDetails("' + data.pid + '","' + data.cid + '","'+data.cobId+'")', function (err, rows, fields) {
+                    if (err) {
+                        io.in('C' + data.cid).emit('cancelFail');
+                        console.error('DB error in cancelBooking : ' + err.code);
+                    } else {
+                        io.in('C' + data.cid).emit('cancelSuccess');
+                        io.in('P' + data.pid).emit('cancelSuccess');
+                        console.log('cancelBooking completed')
+                    }
+                    connection.release();
+                });
+            }
+        });
     });
 
     socket.on('pickupConfirm', function (data) {
         if(typeof(data) != "object"){
             data = JSON.parse(data);
         }
-        io.in(CustomerId).emit('pickupConfirm', {DeliveryId: DeliveryId, BookingId: BookingId});
+        connectionPool.getConnection(function (err, connection) {
+            if (err) {
+                io.in('C' + data.cid).emit('pickupFail');
+                console.error('CONNECTION error in pickupConfirm : ' + err);
+            } else {
+                connection.query('CALL  InsertUpdate_NodeJSPickupConfirmDetails("' + data.pid + '","' + data.cid + '","'+data.cobId+'")', function (err, rows, fields) {
+                    if (err) {
+                        io.in('C' + data.cid).emit('pickupFail');
+                        console.error('DB error in pickupConfirm : ' + err.code);
+                    } else {
+                        io.in('C' + data.cid).emit('pickupConfirm');
+                        io.in('P' + data.pid).emit('pickupConfirm');
+                        console.log('pickupConfirm completed')
+                    }
+                    connection.release();
+                });
+            }
+        });
+
+    });
+    socket.on('getAllPingoWithNullCid', function (data) {
+        if(typeof(data) != "object"){
+            data = JSON.parse(data);
+        }
+        connectionPool.getConnection(function (err, connection) {
+            if (err) {
+                console.error('CONNECTION error in getAllPingoWithNullCid : ' + err);
+            } else {
+                connection.query('CALL  Get_PiiingLatLonForCSSByZoneId("' + data.zoneid + '")', function (err, rows, fields) {
+                    if (err) {
+                        console.error('DB error in getAllPingoWithNullCid : ' + err.code);
+                    } else {
+                        socket.emit('getAllPingoWithNullCidResponse',rows)
+                        rows.forEach(function(r){
+                            io.in('P'+ r.pid).emit('getLatLong');
+                        })
+                        console.log('getAllPingoWithNullCid completed')
+                    }
+                    connection.release();
+                });
+            }
+        });
     });
 
-    function getAllPingoWithNullCid(){
-        var pingosWithNullCid = []//logic for finding pingo with 0 cid
-        for(var i = 0; i < pingosWithNullCid.length; i++){
-            io.in('P'+pingosWithNullCid[i]).emit('getLatLong');
-        }
-    }
-
+/*
     socket.on('onLogin', function(data){
         if(typeof(data) != "object"){
             data = JSON.parse(data);
@@ -157,4 +216,5 @@ io.on('connection', function (socket) {
         socket.emit('logoutFail', data);
 //        }
     });
+*/
 });
