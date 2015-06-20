@@ -19,6 +19,9 @@
         android:id="@+id/action_cancelbooking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/action_booknow"
+        android:layout_below="@+id/action_booknow"
+        android:layout_marginTop="45dp"
         android:text="@string/cancelbooking"
         android:textStyle="bold" />
 

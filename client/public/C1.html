@@ -2,6 +2,7 @@
 <head>
     <title></title>
     <script type="text/javascript" src="js/socket.io.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
     <style type="text/css">
         html, body, #map-canvas {
             height: 100%;
@@ -21,7 +22,7 @@
 <ul id="myList">
 </ul>
 -->
-<div id="map-canvas"></div>
+<!--<div id="map-canvas"></div>-->
 <script type="text/javascript">
     var map;
     function initialize() {
@@ -34,7 +35,7 @@
     google.maps.event.addDomListener(window, 'load', initialize);
 </script>
 <script>
-    var socket = io('http://localhost:3003');
+    var socket = io(CHAT_SERVER_URL);
     var cid = 1;
 
     socket.on('totalPingoOnline', function (pingoTotal) {

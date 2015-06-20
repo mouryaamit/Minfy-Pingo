@@ -133,7 +133,7 @@ public class MainActivity extends ActionBarActivity {
 					mSocket.emit("pushLatLong", myString);
 		        }
 		    };
-		    timer.schedule( task,0, 1000 );
+		    timer.schedule( task,0, 5000 );
 		
 			Button action_booknow = (Button) view
 					.findViewById(R.id.action_booknow);

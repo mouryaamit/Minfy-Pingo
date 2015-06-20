@@ -79,6 +79,7 @@ io.on('connection', function (socket) {
         if(typeof(data) != "object"){
             data = JSON.parse(data);
         }
+        console.log(Date.now())
         if (data.cid == 0) {
             socket.broadcast.emit('PickupLatLongDetailsBroadcast', data);
         } else {

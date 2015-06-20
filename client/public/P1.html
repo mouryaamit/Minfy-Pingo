@@ -3,6 +3,7 @@
     <title></title>
     <script type="text/javascript" src="js/socket.io.js"></script>
     <script type="text/javascript" src="js/random.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
 
 </head>
 <body>
@@ -14,7 +15,7 @@
 </div>
 </ul>
 <script type="text/javascript">
-    var socket = io('http://localhost:3003');
+    var socket = io(CHAT_SERVER_URL);
     var pid = 1;
     socket.on('connect', function () {
         console.log('user connected');
@@ -31,10 +32,10 @@
         socket.emit('pushLatLong', {lat: lat, long: long, cid: cid, pid: pid})
         i++;
     }
-    setInterval(function(){
+    /*setInterval(function(){
         var cid = parseInt(Math.random()*25)
         socket.emit('pushLatLong', {lat: getRandomLat(), long: getRandomLong(), cid: cid, pid: pid})
-    },1000);
+    },1000);*/
 </script>
 </body>
 </html>
