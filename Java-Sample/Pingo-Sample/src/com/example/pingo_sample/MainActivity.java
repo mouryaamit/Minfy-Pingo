@@ -110,7 +110,6 @@ public class MainActivity extends ActionBarActivity {
 		
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
-//setinterval
 			Timer timer = new Timer();
 		    TimerTask task = new TimerTask() {
 		        public void run()
