@@ -37,6 +37,7 @@ io.on('connection', function (socket) {
         }
         console.log('Customer got socket with socketId : ' + user);
         socket.broadcast.emit('totalCustomerOnline', customer.length);
+        socket.broadcast.emit('totalPingoOnline', pingo.length);
     });
 
     socket.on('addMePingo', function (data) {
@@ -51,6 +52,7 @@ io.on('connection', function (socket) {
             pingo.push(user)
         }
         console.log('Pingo got socket with socketId : ' + user);
+        socket.broadcast.emit('totalCustomerOnline', customer.length);
         socket.broadcast.emit('totalPingoOnline', pingo.length);
     });
 
@@ -152,12 +154,12 @@ io.on('connection', function (socket) {
         }
         connectionPool.getConnection(function (err, connection) {
             if (err) {
-                io.in('C' + data.cid).emit('pickupFail');
+                io.in('P' + data.pid).emit('pickupFail');
                 console.error('CONNECTION error in pickupConfirm : ' + err);
             } else {
                 connection.query('CALL  InsertUpdate_NodeJSPickupConfirmDetails("' + data.pid + '","' + data.cid + '","'+data.cobId+'")', function (err, rows, fields) {
                     if (err) {
-                        io.in('C' + data.cid).emit('pickupFail');
+                        io.in('P' + data.pid).emit('pickupFail');
                         console.error('DB error in pickupConfirm : ' + err.code);
                     } else {
                         io.in('C' + data.cid).emit('pickupConfirm');
