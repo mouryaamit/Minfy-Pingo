@@ -1,0 +1,17 @@
+INDEX VERSION 1.127+E:\Personal_Projects\Minfy-Pingo\Java-Sample\.metadata\.plugins\org.eclipse.jdt.core
+1026170473.index
+447426309.index
+969793202.index
+1284074322.index
+1357883711.index
+622389532.index
+197373822.index
+2622413322.index
+499592687.index
+2961041532.index
+3762488102.index
+4250234028.index
+100217171.index
+1062268147.index
+4096427699.index
+2952645661.index

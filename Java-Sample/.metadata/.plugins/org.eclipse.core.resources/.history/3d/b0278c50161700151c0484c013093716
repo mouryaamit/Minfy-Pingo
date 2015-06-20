@@ -1,0 +1,260 @@
+package com.example.customer_sample;
+
+import java.net.URISyntaxException;
+
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.camera2.TotalCaptureResult;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+
+/**
+ * A chat fragment containing messages view and input form.
+ */
+public class MainFragment extends Fragment {
+
+	private static final int REQUEST_LOGIN = 0;
+
+	private static final int TYPING_TIMER_LENGTH = 600;
+
+	private Socket mSocket;
+	{
+		try {
+			mSocket = IO.socket(Constants.CHAT_SERVER_URL);
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private Integer cid = 78;
+	private Integer pid = 45;
+
+	private EditText totalPingo;
+	private TextView pingoId;
+	private TextView pLat;
+	private TextView pLong;
+
+	public MainFragment() {
+		super();
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		mSocket.on(Socket.EVENT_CONNECT, onConnect);
+		mSocket.on(Socket.EVENT_RECONNECT, onConnect);
+		mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+		mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+		mSocket.on("Reconnect", onReconnect);
+		mSocket.on("totalPingoOnline", onTotalPingoOnline);
+		mSocket.on("PickupLatLongDetails", onPickupLatLongDetails);
+		mSocket.on("bookingFail", onBookingFail);
+		mSocket.on("bookingSuccess", onBookingSuccess);
+		mSocket.on("cancelFail", onCancelFail);
+		mSocket.on("cancelSuccess", onCancelSuccess);
+		mSocket.on("pickupConfirm", onPickupConfirm);
+
+		mSocket.connect();
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_main, container, false);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		mSocket.disconnect();
+		mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+		mSocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		totalPingo = (EditText) view.findViewById(R.id.total_pingo);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (Activity.RESULT_OK != resultCode) {
+			getActivity().finish();
+			return;
+		}
+
+	}
+
+	private Emitter.Listener onConnect = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			String myString = null;
+			try {
+				myString = new JSONObject().put("user", cid).toString();
+			} catch (Exception e) {
+				System.out.println("Ërror : " + e.getMessage());
+				e.printStackTrace();
+			}
+			mSocket.emit("addMeCustomer", myString);
+		}
+	};
+
+	private Emitter.Listener onConnectError = new Emitter.Listener() {
+		@Override
+		public void call(Object... args) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+
+				}
+			});
+		}
+	};
+
+	private Emitter.Listener onReconnect = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			String myString = null;
+			try {
+				myString = new JSONObject().put("user", cid).toString();
+			} catch (Exception e) {
+				System.out.println("Ërror : " + e.getMessage());
+				e.printStackTrace();
+			}
+			mSocket.emit("addMeCustomer", myString);
+		}
+	};
+
+	private Emitter.Listener onTotalPingoOnline = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			getActivity().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println("args " + args[0]);
+					// JSONObject data = (JSONObject) args[0];
+					/*totalPingo = (TextView) getView().findViewById(
+							R.id.total_pingo);*/
+					System.out.println("Pingo Online : " + args[0]);
+					System.out.println(totalPingo);
+					totalPingo.setText("Pingo");
+				}
+			});
+		}
+	};
+
+	private Emitter.Listener onPickupLatLongDetails = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+
+		}
+	};
+
+	private Emitter.Listener onBookingFail = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			/*
+			 * NotificationManager notif = (NotificationManager)
+			 * getSystemService(Context.NOTIFICATION_SERVICE); Notification
+			 * notify = new Notification( android.R.drawable.stat_notify_more,
+			 * "Booking Fail", System.currentTimeMillis()); PendingIntent
+			 * pending = PendingIntent.getActivity( getApplicationContext(), 0,
+			 * new Intent(), 0);
+			 * 
+			 * notify.setLatestEventInfo(getApplicationContext(),
+			 * "Booking Fail", "Booking Fail", pending); notif.notify(0,
+			 * notify);
+			 */
+		}
+	};
+
+	private Emitter.Listener onBookingSuccess = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			/*
+			 * NotificationManager notif = (NotificationManager)
+			 * getSystemService(Context.NOTIFICATION_SERVICE); Notification
+			 * notify = new Notification( android.R.drawable.stat_notify_more,
+			 * "Booking Success", System.currentTimeMillis()); PendingIntent
+			 * pending = PendingIntent.getActivity( getApplicationContext(), 0,
+			 * new Intent(), 0);
+			 * 
+			 * notify.setLatestEventInfo(getApplicationContext(),
+			 * "Booking Success", "Booking Success", pending); notif.notify(0,
+			 * notify);
+			 */}
+	};
+
+	private Emitter.Listener onCancelFail = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			/*
+			 * NotificationManager notif = (NotificationManager)
+			 * getSystemService(Context.NOTIFICATION_SERVICE); Notification
+			 * notify = new Notification( android.R.drawable.stat_notify_more,
+			 * "Cancel Fail", System.currentTimeMillis()); PendingIntent pending
+			 * = PendingIntent.getActivity( getApplicationContext(), 0, new
+			 * Intent(), 0);
+			 * 
+			 * notify.setLatestEventInfo(getApplicationContext(), "Cancel Fail",
+			 * "Cancel Fail", pending); notif.notify(0, notify);
+			 */
+		}
+	};
+
+	private Emitter.Listener onCancelSuccess = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			/*
+			 * NotificationManager notif = (NotificationManager)
+			 * getSystemService(Context.NOTIFICATION_SERVICE); Notification
+			 * notify = new Notification( android.R.drawable.stat_notify_more,
+			 * "Cancel Success", System.currentTimeMillis()); PendingIntent
+			 * pending = PendingIntent.getActivity( getApplicationContext(), 0,
+			 * new Intent(), 0);
+			 * 
+			 * notify.setLatestEventInfo(getApplicationContext(),
+			 * "Cancel Success", "Cancel Success", pending); notif.notify(0,
+			 * notify);
+			 */
+		}
+	};
+
+	private Emitter.Listener onPickupConfirm = new Emitter.Listener() {
+		@Override
+		public void call(final Object... args) {
+			/*
+			 * NotificationManager notif = (NotificationManager)
+			 * getSystemService(Context.NOTIFICATION_SERVICE); Notification
+			 * notify = new Notification( android.R.drawable.stat_notify_more,
+			 * "Pickup Confirm", System.currentTimeMillis()); PendingIntent
+			 * pending = PendingIntent.getActivity( getApplicationContext(), 0,
+			 * new Intent(), 0);
+			 * 
+			 * notify.setLatestEventInfo(getApplicationContext(),
+			 * "Pickup Confirm", "Pickup Confirm", pending); notif.notify(0,
+			 * notify);
+			 */}
+	};
+
+}
